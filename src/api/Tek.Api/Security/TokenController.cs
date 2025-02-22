@@ -98,7 +98,7 @@ public class TokenController : ControllerBase
     [HttpGet(Endpoints.Version)]
     public IActionResult GetVersion()
     {
-        var version = typeof(TokenController).Assembly.GetName().Version;
+        var version = typeof(TokenController).Assembly.GetName().Version?.ToString() ?? "0.0.0.0";
 
         return Ok(version);
     }

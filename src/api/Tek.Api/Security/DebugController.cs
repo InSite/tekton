@@ -16,8 +16,8 @@ public class DebugController : ControllerBase
         _claimConverter = principalAdapter;
     }
 
-    [HttpGet(Endpoints.Debug.Paths)]
-    [Authorize(Endpoints.Debug.Paths)]
+    [HttpGet(Endpoints.Debug.Endpoints)]
+    [Authorize(Endpoints.Debug.Endpoints)]
     [ApiExplorerSettings(GroupName = "Security: Debug")]
     public IActionResult DebugPaths()
     {

@@ -36,13 +36,13 @@ public static class TelemetryRegistration
 
             if (monitoring.Debug)
             {
-                var folder = Path.GetDirectoryName(monitoring.Path);
+                var folder = Path.GetDirectoryName(monitoring.File);
                 if (folder != null)
                 {
                     Directory.CreateDirectory(folder);
 
                     options.Debug = true;
-                    options.DiagnosticLogger = new FileDiagnosticLogger(monitoring.Path);
+                    options.DiagnosticLogger = new FileDiagnosticLogger(monitoring.File);
                 }
             }
 

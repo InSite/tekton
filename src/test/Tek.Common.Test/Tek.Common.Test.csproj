@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\library\Tek.Common\Tek.Common.csproj" />
+    <ProjectReference Include="..\..\lib\Tek.Common\Tek.Common.csproj" />
   </ItemGroup>
 
 </Project>

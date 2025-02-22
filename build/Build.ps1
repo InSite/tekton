@@ -8,10 +8,37 @@ $RevisionNumber = ($NowUtc.ToString("HH") + $NowUtc.ToString("mm")) -as [int]
 $PackageVersion = "$MajorNumber.$MinorNumber.$BuildNumber.$RevisionNumber"
 
 
+Write-Host "`nStep 0: Building documentation`n" -ForegroundColor Blue
+
+  $SiteFolder = ".\_site"
+  if (Test-Path -Path $SiteFolder) { Remove-Item -Path $SiteFolder\* -Recurse }
+
+  $ReferenceFolder = ".\reference"
+  if (Test-Path -Path $ReferenceFolder) { Remove-Item -Path $ReferenceFolder\* -Recurse }
+
+  docfx docfx.json
+
+  $ReleasePath   = ".\releases\Tek.Docs.$PackageVersion.zip"
+
+  $PublishFolder = ".\releases\Tek.Docs"
+  if (Test-Path -Path $PublishFolder) { Remove-Item -Path $PublishFolder\* -Recurse }
+
+  Copy-Item $SiteFolder $PublishFolder -Recurse
+  Remove-Item -Path $SiteFolder -Recurse
+  Remove-Item -Path $ReferenceFolder -Recurse
+
+  Compress-Archive -Path $PublishFolder\* -DestinationPath $ReleasePath
+  
+  Remove-Item -Path $PublishFolder -Recurse
+
+  $elapsedTime = $(get-date) - $Now
+  Write-Host "`nStep 0: Completed documentation (elapsed time = $($elapsedTime.ToString("mm\:ss")))" -ForegroundColor Blue
+
+
 Write-Host "`nStep 1: Starting build for Tek.Terminal version $PackageVersion`n" -ForegroundColor Blue
 
-  $PublishFolder = ".\Releases\Publish\Tek.Terminal"
-  $ReleasePath   = ".\Releases\Tek.Terminal.$PackageVersion.zip"
+  $PublishFolder = ".\releases\Publish\Tek.Terminal"
+  $ReleasePath   = ".\releases\Tek.Terminal.$PackageVersion.zip"
 
   if (Test-Path -Path $PublishFolder) { Remove-Item -Path $PublishFolder\* -Recurse }
 
@@ -27,8 +54,8 @@ Write-Host "`nStep 1: Starting build for Tek.Terminal version $PackageVersion`n"
 
   Write-Host "`nStep 2: Starting build for Tek.Api version $PackageVersion`n" -ForegroundColor Blue
 
-  $PublishFolder = ".\Releases\Publish\Tek.Api"
-  $ReleasePath   = ".\Releases\Tek.Api.$PackageVersion.zip"
+  $PublishFolder = ".\releases\Publish\Tek.Api"
+  $ReleasePath   = ".\releases\Tek.Api.$PackageVersion.zip"
 
   if (Test-Path -Path $PublishFolder) { Remove-Item -Path $PublishFolder\* -Recurse }
 
@@ -40,3 +67,14 @@ Write-Host "`nStep 1: Starting build for Tek.Terminal version $PackageVersion`n"
 
   $elapsedTime = $(get-date) - $Now
   Write-Host "`nStep 2: Completed build for Tek.Api version $PackageVersion (elapsed time = $($elapsedTime.ToString("mm\:ss")))" -ForegroundColor Blue
+
+
+Write-Host "`nBuild Step 3: Uploading packages to Octopus...`n" -ForegroundColor Blue
+
+  $OctoServer  = "https://miller.octopus.app"
+  $OctoKey     = "API-QWUZUILDMU2R9IJSZ7CJIUBV8BLSBC7"
+
+  Octo push --server=$OctoServer --apiKey=$OctoKey --replace-existing --package=Releases\Tek.Docs.$PackageVersion.zip
+ 
+  $elapsedTime = $(get-date) - $Now
+  Write-Host "`nUpload Complete. Elapsed time = $($ElapsedTime.ToString("mm\:ss"))`n" -ForegroundColor Blue

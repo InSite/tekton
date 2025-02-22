@@ -14,7 +14,7 @@ public static class SentryRegistration
             {
                 options.Debug = true;
 
-                options.DiagnosticLogger = new FileDiagnosticLogger(sentry.Path);
+                options.DiagnosticLogger = new FileDiagnosticLogger(sentry.File);
 
                 // If Debug is enabled with a FileDiagnosticLogger then the logger throws an
                 // unhandled exception from Sentry.Integrations.AppDomainProcessExitIntegration.HandleProcessExit.

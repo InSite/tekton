@@ -197,14 +197,14 @@ public class LockoutTests
             {
                 for (var current = from; current <= thru; current = current.AddMinutes(5))
                 {
-                    Assert.Equal(IsActiveHotfixWindow(hotfix.Interval.GetEffective(), current, enterprise, environment.Name), hotfix.IsActive(current, enterprise, environment.Name));
-                    Assert.Equal(IsActiveDailyBuild(build.Interval.GetEffective(), current, enterprise, environment.Name), build.IsActive(current, enterprise, environment.Name));
-                    Assert.Equal(IsActiveDailyMaintenance(maintenance.Interval.GetEffective(), current, enterprise, environment.Name), maintenance.IsActive(current, enterprise, environment.Name));
+                    Assert.Equal(IsActiveHotfixWindow(hotfix.Interval.GetEffective(), current, enterprise, environment.Name), hotfix.IsActive(current, enterprise, environment.Name.ToString()));
+                    Assert.Equal(IsActiveDailyBuild(build.Interval.GetEffective(), current, enterprise, environment.Name), build.IsActive(current, enterprise, environment.Name.ToString()));
+                    Assert.Equal(IsActiveDailyMaintenance(maintenance.Interval.GetEffective(), current, enterprise, environment.Name), maintenance.IsActive(current, enterprise, environment.Name.ToString()));
 
-                    Assert.Equal(IsActiveCustom1(custom1.Interval.GetEffective(), current, enterprise, environment.Name), custom1.IsActive(current, enterprise, environment.Name));
-                    Assert.Equal(IsActiveCustom2(custom2.Interval.GetEffective(), current, enterprise, environment.Name), custom2.IsActive(current, enterprise, environment.Name));
-                    Assert.Equal(IsActiveCustom3(custom3.Interval.GetEffective(), current, enterprise, environment.Name), custom3.IsActive(current, enterprise, environment.Name));
-                    Assert.Equal(IsActiveCustom4(custom4.Interval.GetEffective(), current, enterprise, environment.Name), custom4.IsActive(current, enterprise, environment.Name));
+                    Assert.Equal(IsActiveCustom1(custom1.Interval.GetEffective(), current, enterprise, environment.Name), custom1.IsActive(current, enterprise, environment.Name.ToString()));
+                    Assert.Equal(IsActiveCustom2(custom2.Interval.GetEffective(), current, enterprise, environment.Name), custom2.IsActive(current, enterprise, environment.Name.ToString()));
+                    Assert.Equal(IsActiveCustom3(custom3.Interval.GetEffective(), current, enterprise, environment.Name), custom3.IsActive(current, enterprise, environment.Name.ToString()));
+                    Assert.Equal(IsActiveCustom4(custom4.Interval.GetEffective(), current, enterprise, environment.Name), custom4.IsActive(current, enterprise, environment.Name.ToString()));
                 }
             }
         }
@@ -452,9 +452,9 @@ public class LockoutTests
 
     #region Hardcoded Strategies
 
-    private bool IsActiveHotfixWindow(DateTimeOffset first, DateTimeOffset current, string enterprise, string environment)
+    private bool IsActiveHotfixWindow(DateTimeOffset first, DateTimeOffset current, string enterprise, EnvironmentName environment)
     {
-        if (environment.Matches("Production") || first > current)
+        if (environment == EnvironmentName.Production || first > current)
             return false;
 
         var when = ConvertToMountainTime(current);
@@ -469,9 +469,9 @@ public class LockoutTests
         return start <= time && time < end;
     }
 
-    private bool IsActiveDailyBuild(DateTimeOffset first, DateTimeOffset current, string enterprise, string environment)
+    private bool IsActiveDailyBuild(DateTimeOffset first, DateTimeOffset current, string enterprise, EnvironmentName environment)
     {
-        if (environment.Matches("Production") || first > current)
+        if (environment == EnvironmentName.Production || first > current)
             return false;
 
         var when = ConvertToMountainTime(current);
@@ -486,7 +486,7 @@ public class LockoutTests
         return start <= time && time < end;
     }
 
-    private bool IsActiveDailyMaintenance(DateTimeOffset first, DateTimeOffset current, string enterprise, string environment)
+    private bool IsActiveDailyMaintenance(DateTimeOffset first, DateTimeOffset current, string enterprise, EnvironmentName environment)
     {
         if (first > current)
             return false;
@@ -500,7 +500,7 @@ public class LockoutTests
         return start <= time && time < end;
     }
 
-    private bool IsActiveCustom1(DateTimeOffset first, DateTimeOffset current, string enterprise, string environment)
+    private bool IsActiveCustom1(DateTimeOffset first, DateTimeOffset current, string enterprise, EnvironmentName environment)
     {
         if (!enterprise.Matches("E04"))
             return false;
@@ -517,7 +517,7 @@ public class LockoutTests
         return start <= time && time < end;
     }
 
-    private bool IsActiveCustom2(DateTimeOffset first, DateTimeOffset current, string enterprise, string environment)
+    private bool IsActiveCustom2(DateTimeOffset first, DateTimeOffset current, string enterprise, EnvironmentName environment)
     {
         if (!enterprise.Matches("E04"))
             return false;
@@ -534,7 +534,7 @@ public class LockoutTests
         return start <= time && time < end;
     }
 
-    private bool IsActiveCustom3(DateTimeOffset first, DateTimeOffset current, string enterprise, string environment)
+    private bool IsActiveCustom3(DateTimeOffset first, DateTimeOffset current, string enterprise, EnvironmentName environment)
     {
         if (!enterprise.Matches("E04"))
             return false;
@@ -551,7 +551,7 @@ public class LockoutTests
         return start <= time && time < end;
     }
 
-    private bool IsActiveCustom4(DateTimeOffset first, DateTimeOffset current, string enterprise, string environment)
+    private bool IsActiveCustom4(DateTimeOffset first, DateTimeOffset current, string enterprise, EnvironmentName environment)
     {
         if (!enterprise.Matches("E04"))
             return false;

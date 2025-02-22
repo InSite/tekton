@@ -23,10 +23,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\library\Tek.Contract\Tek.Contract.csproj" />
-		<ProjectReference Include="..\..\library\Tek.Common\Tek.Common.csproj" />
-		<ProjectReference Include="..\..\library\Tek.Service\Tek.Service.csproj" />
-		<ProjectReference Include="..\..\library\Tek.Toolbox\Tek.Toolbox.csproj" />
+		<ProjectReference Include="..\..\lib\Tek.Contract\Tek.Contract.csproj" />
+		<ProjectReference Include="..\..\lib\Tek.Common\Tek.Common.csproj" />
+		<ProjectReference Include="..\..\lib\Tek.Service\Tek.Service.csproj" />
+		<ProjectReference Include="..\..\lib\Tek.Toolbox\Tek.Toolbox.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup>

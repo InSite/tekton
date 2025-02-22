@@ -7,11 +7,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;IDE0130;IDE0290;</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup>
     <NoWarn>1701;1702;IDE0130;IDE0290;</NoWarn>
   </PropertyGroup>
 
@@ -39,10 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\library\Tek.Common\Tek.Common.csproj" />
-    <ProjectReference Include="..\..\library\Tek.Contract\Tek.Contract.csproj" />
-    <ProjectReference Include="..\..\library\Tek.Service\Tek.Service.csproj" />
-    <ProjectReference Include="..\..\library\Tek.Toolbox\Tek.Toolbox.csproj" />
+    <ProjectReference Include="..\..\lib\Tek.Common\Tek.Common.csproj" />
+    <ProjectReference Include="..\..\lib\Tek.Contract\Tek.Contract.csproj" />
+    <ProjectReference Include="..\..\lib\Tek.Service\Tek.Service.csproj" />
+    <ProjectReference Include="..\..\lib\Tek.Toolbox\Tek.Toolbox.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -18,7 +18,7 @@ settings.Release.Directory = AppContext.BaseDirectory;
 // diagnosing startup issues, monitoring initialization steps, and providing consistent, centralized
 // logging throughout the application lifecycle.
 
-Serilog.Log.Logger = ConfigureLogging(settings.Telemetry.Logging.Path);
+Serilog.Log.Logger = ConfigureLogging(settings.Telemetry.Logging.File);
 
 // Step 3. Build the application host with all services registered in the DI container.
 

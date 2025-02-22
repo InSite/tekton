@@ -9,7 +9,7 @@ public static partial class Endpoints
 
     public static class Debug
     {
-        public const string Paths = "api/debug/paths";
+        public const string Endpoints = "api/debug/endpoints";
         public const string Permissions = "api/debug/permissions";
         public const string Resources = "api/debug/resources";
         public const string Token = "api/debug/token";
