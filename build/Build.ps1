@@ -13,8 +13,8 @@ Write-Host "`nStep 0: Building documentation`n" -ForegroundColor Blue
   $SiteFolder = ".\_site"
   if (Test-Path -Path $SiteFolder) { Remove-Item -Path $SiteFolder\* -Recurse }
 
-  $ReferenceFolder = ".\reference"
-  if (Test-Path -Path $ReferenceFolder) { Remove-Item -Path $ReferenceFolder\* -Recurse }
+  $ApiFolder = ".\api"
+  if (Test-Path -Path $ApiFolder) { Remove-Item -Path $ApiFolder\* -Recurse }
 
   docfx docfx.json
 
@@ -25,14 +25,14 @@ Write-Host "`nStep 0: Building documentation`n" -ForegroundColor Blue
 
   Copy-Item $SiteFolder $PublishFolder -Recurse
   Remove-Item -Path $SiteFolder -Recurse
-  Remove-Item -Path $ReferenceFolder -Recurse
+  Remove-Item -Path $ApiFolder -Recurse
 
   Compress-Archive -Path $PublishFolder\* -DestinationPath $ReleasePath
   
   Remove-Item -Path $PublishFolder -Recurse
 
   $elapsedTime = $(get-date) - $Now
-  Write-Host "`nStep 0: Completed documentation (elapsed time = $($elapsedTime.ToString("mm\:ss")))" -ForegroundColor Blue
+  Write-Host "`nStep 0: Completed build for Tek.Docs (elapsed time = $($elapsedTime.ToString("mm\:ss")))" -ForegroundColor Blue
 
 
 Write-Host "`nStep 1: Starting build for Tek.Terminal version $PackageVersion`n" -ForegroundColor Blue
@@ -69,12 +69,14 @@ Write-Host "`nStep 1: Starting build for Tek.Terminal version $PackageVersion`n"
   Write-Host "`nStep 2: Completed build for Tek.Api version $PackageVersion (elapsed time = $($elapsedTime.ToString("mm\:ss")))" -ForegroundColor Blue
 
 
-Write-Host "`nBuild Step 3: Uploading packages to Octopus...`n" -ForegroundColor Blue
+Write-Host "`nStep 3: Uploading packages to Octopus...`n" -ForegroundColor Blue
 
   $OctoServer  = "https://miller.octopus.app"
   $OctoKey     = "API-QWUZUILDMU2R9IJSZ7CJIUBV8BLSBC7"
 
+  Octo push --server=$OctoServer --apiKey=$OctoKey --replace-existing --package=Releases\Tek.Api.$PackageVersion.zip
+  Octo push --server=$OctoServer --apiKey=$OctoKey --replace-existing --package=Releases\Tek.Terminal.$PackageVersion.zip
   Octo push --server=$OctoServer --apiKey=$OctoKey --replace-existing --package=Releases\Tek.Docs.$PackageVersion.zip
  
   $elapsedTime = $(get-date) - $Now
-  Write-Host "`nUpload Complete. Elapsed time = $($ElapsedTime.ToString("mm\:ss"))`n" -ForegroundColor Blue
+  Write-Host "`nStep 3: Completed upload. Elapsed time = $($ElapsedTime.ToString("mm\:ss"))`n" -ForegroundColor Blue

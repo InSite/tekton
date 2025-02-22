@@ -9,7 +9,7 @@
           "src": "../src"
         }
       ],
-      "output": "reference",
+      "output": "api",
       "namespaceLayout": "nested",
       "filter": "filterConfig.yml"
     }
