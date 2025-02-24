@@ -6,15 +6,15 @@ namespace Tek.Service
 {
     public class PostgresDbContext
     {
-        public string CreateConnectionString()
+        public static string CreateConnectionString(DatabaseConnectionSettings settings)
         {
             var builder = new NpgsqlConnectionStringBuilder
             {
-                Host = _settings.Host,
-                Port = _settings.Port,
-                Database = _settings.Database,
-                Username = _settings.User,
-                Password = _settings.Password,
+                Host = settings.Host,
+                Port = settings.Port,
+                Database = settings.Database,
+                Username = settings.User,
+                Password = settings.Password,
                 SslMode = SslMode.Disable,
                 IncludeErrorDetail = true
             };
@@ -31,7 +31,7 @@ namespace Tek.Service
 
         public IDbConnection CreateConnection()
         {
-            return new NpgsqlConnection(CreateConnectionString());
+            return new NpgsqlConnection(CreateConnectionString(_settings));
         }
     }
 }

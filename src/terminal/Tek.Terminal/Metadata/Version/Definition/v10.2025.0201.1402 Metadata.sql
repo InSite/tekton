@@ -1,4 +1,26 @@
-﻿-- Create a table to store origin metadata.
+﻿-- Create a table to store entity metadata.
+
+CREATE TABLE metadata.t_entity (
+
+  component_type VARCHAR(20) NOT NULL,
+  component_name VARCHAR(30) NOT NULL,
+  component_feature VARCHAR(40) NOT NULL,
+
+  entity_id UUID NOT NULL PRIMARY KEY,
+  entity_name VARCHAR(50) NOT NULL,
+
+  collection_slug VARCHAR(50) NOT NULL,
+  collection_key VARCHAR(60) NOT NULL,
+
+  storage_structure VARCHAR(20) NOT NULL,
+  storage_schema VARCHAR(30) NOT NULL,
+  storage_table VARCHAR(40) NOT NULL,
+  storage_key VARCHAR(80) NOT NULL,
+
+  future_storage_table VARCHAR(40) NULL
+);
+
+-- Create a table to store origin metadata.
 
 CREATE TABLE metadata.t_origin (
 
@@ -91,3 +113,17 @@ FROM
     information_schema.columns C
     JOIN metadata.v_table AS T ON C.TABLE_NAME = T.table_name
     AND C.TABLE_SCHEMA = T.schema_name;
+
+create view metadata.v_primary_key as
+select ns.nspname as schema_name ,
+       tb.relname as table_name ,
+       att.attname as column_name ,
+       con.conname as constraint_name ,
+       pg_catalog.format_type(att.atttypid, att.atttypmod) as data_type ,
+       att.attidentity != '' as is_identity
+from pg_constraint as con
+join pg_class as tb on tb.oid = con.conrelid
+join pg_namespace as ns on ns.oid = tb.relnamespace
+join pg_attribute as att on att.attrelid = tb.oid
+and att.attnum = any (con.conkey)
+where con.contype = 'p'; -- Only include primary key constraints

@@ -71,8 +71,8 @@ Write-Host "`nStep 1: Starting build for Tek.Terminal version $PackageVersion`n"
 
 Write-Host "`nStep 3: Uploading packages to Octopus...`n" -ForegroundColor Blue
 
-  $OctoServer  = "https://miller.octopus.app"
-  $OctoKey     = "API-QWUZUILDMU2R9IJSZ7CJIUBV8BLSBC7"
+  $OctoServer = "https://miller.octopus.app"
+  $OctoKey    = Get-Content -Path ..\config\octopus-api-key.txt -TotalCount 1
 
   Octo push --server=$OctoServer --apiKey=$OctoKey --replace-existing --package=Releases\Tek.Api.$PackageVersion.zip
   Octo push --server=$OctoServer --apiKey=$OctoKey --replace-existing --package=Releases\Tek.Terminal.$PackageVersion.zip

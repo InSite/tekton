@@ -72,6 +72,7 @@ IHost BuildHost(TektonSettings settings)
             services.AddSingleton<DatabaseCommander>();
 
             services.AddTransient<Application>();
+            // TODO: services.AddTransient<Tek.Service.Security.RoleWriter>();
 
             services.AddSingleton<Spectre.Console.Cli.ITypeRegistrar>(new TypeRegistrar(services));
         });

@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 using Serilog;
 
 using Tek.Service;
@@ -60,6 +62,11 @@ WebApplication BuildHost(TektonSettings settings)
 
     services.AddSingleton<IJsonSerializer, JsonSerializer>();
     services.AddTransient<LocationDbContext, LocationDbContext>();
+
+    /* TODO: 
+    services.AddDbContextFactory<TableDbContext>(options =>
+            options.UseNpgsql(PostgresDbContext.CreateConnectionString(settings.Database.Connection))
+        );*/
 
     services.AddControllers().AddJsonOptions(options =>
     {

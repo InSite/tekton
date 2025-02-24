@@ -100,10 +100,10 @@ namespace Tek.Common
             if (input.IsEmpty())
                 return null;
 
-            // Regular expression to match allowed characters (letters, digits, underscores, hyphens)
+            // Regular expression to match allowed characters (letters, digits, underscores, hyphens).
             string pattern = "[^a-zA-Z0-9_.-]";
 
-            // Replace disallowed characters with an empty string
+            // Replace disallowed characters with a hyphen.
             string sanitized = Regex.Replace(input, pattern, "-");
 
             return sanitized;
@@ -119,6 +119,8 @@ namespace Tek.Common
         {
             if (input.IsEmpty())
                 return null;
+
+            input = Sanitize(input);
 
             // Use a regex to find the boundaries between uppercase letters and other letters.
             string kebabCase = Regex.Replace(input, "([a-z])([A-Z])", "$1-$2");

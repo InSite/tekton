@@ -34,7 +34,9 @@ public class Application
                 metadata.AddCommand<DropDatabaseCommand>("drop-database");
                 metadata.AddCommand<ResetDatabaseCommand>("reset-database");
                 metadata.AddCommand<UpgradeDatabaseCommand>("upgrade-database");
-            
+
+                // TODO: metadata.AddCommand<FakeDatabaseCommand>("fake-database");
+
                 metadata.AddCommand<GenerateUuidCommand>("generate-uuid");
             });
 

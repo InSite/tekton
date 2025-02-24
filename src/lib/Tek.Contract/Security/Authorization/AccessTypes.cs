@@ -34,4 +34,14 @@ namespace Tek.Contract
         Delete = 1 << 4,
         All    = Head | Get | Put | Post | Delete
     }
+
+    [Flags]
+    public enum AuthorityAccess
+    {
+        None = 0,
+        Learner = 1 << 0,
+        Administrator = 1 << 1,
+        Operator = 1 << 2,
+        All = Learner | Administrator | Operator
+    }
 }
