@@ -13,24 +13,14 @@ public class CountryService
 
     private readonly CountryAdapter _adapter = new CountryAdapter();
 
-    private readonly IValidator<ICountryCriteria> _criteriaValidator;
-    private readonly IValidator<TCountryEntity> _entityValidator;
-
-    public CountryService(TCountryReader reader, TCountryWriter writer,
-        IValidator<ICountryCriteria> criteriaValidator, IValidator<TCountryEntity> entityValidator)
+    public CountryService(TCountryReader reader, TCountryWriter writer)
     {
         _reader = reader;
         _writer = writer;
-
-        _criteriaValidator = criteriaValidator;
-        _entityValidator = entityValidator;
     }
 
     public async Task<bool> AssertAsync(Guid country, CancellationToken token)
         => await _reader.AssertAsync(country, token);
-
-    public async Task<int> CountAsync(ICountryCriteria criteria, CancellationToken token)
-        => await _reader.CountAsync(criteria, token);
 
     public async Task<CountryModel?> FetchAsync(Guid country, CancellationToken token)
     {
@@ -39,29 +29,22 @@ public class CountryService
         return entity != null ? _adapter.ToModel(entity) : null;
     }
 
+    public async Task<int> CountAsync(ICountryCriteria criteria, CancellationToken token)
+        => await _reader.CountAsync(criteria, token);
+
     public async Task<IEnumerable<CountryModel>> CollectAsync(ICountryCriteria criteria, CancellationToken token)
     {
-        await _criteriaValidator.ValidateAndThrowAsync(criteria, token);
-
         var entities = await _reader.CollectAsync(criteria, token);
 
         return _adapter.ToModel(entities);
     }
 
     public async Task<IEnumerable<CountryMatch>> SearchAsync(ICountryCriteria criteria, CancellationToken token)
-    {
-        await _criteriaValidator.ValidateAndThrowAsync(criteria, token);
-
-        var entities = await _reader.CollectAsync(criteria, token);
-
-        return _adapter.ToMatch(entities);
-    }
+        => await _reader.SearchAsync(criteria, token);
 
     public async Task<bool> CreateAsync(CreateCountry create, CancellationToken token)
     {
         var entity = _adapter.ToEntity(create);
-
-        await _entityValidator.ValidateAndThrowAsync(entity, token);
 
         return await _writer.CreateAsync(entity, token);
     }
@@ -74,8 +57,6 @@ public class CountryService
             return false;
 
         _adapter.Copy(modify, entity);
-
-        await _entityValidator.ValidateAndThrowAsync(entity, token);
 
         return await _writer.ModifyAsync(entity, token);
     }

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Security;
 public class TRoleWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TRoleEntity> _validator;
 
-    public TRoleWriter(IDbContextFactory<TableDbContext> context)
+    public TRoleWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TRoleEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TRoleEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.RoleId, token, db);
@@ -27,6 +33,8 @@ public class TRoleWriter
         
     public async Task<bool> ModifyAsync(TRoleEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.RoleId, token, db);

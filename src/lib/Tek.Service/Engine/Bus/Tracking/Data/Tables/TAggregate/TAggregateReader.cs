@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,10 +8,15 @@ namespace Tek.Service.Bus;
 public class TAggregateReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<IAggregateCriteria> _validator;
+    private readonly AggregateAdapter _adapter;
 
-    public TAggregateReader(IDbContextFactory<TableDbContext> context)
+    public TAggregateReader(IDbContextFactory<TableDbContext> context, 
+        IValidator<IAggregateCriteria> validator, AggregateAdapter adapter)
     {
         _context = context;
+        _validator = validator;
+        _adapter = adapter;
     }
 
     public async Task<bool> AssertAsync(Guid aggregate, CancellationToken token)
@@ -38,10 +44,24 @@ public class TAggregateReader
 
     public async Task<IEnumerable<TAggregateEntity>> CollectAsync(IAggregateCriteria criteria, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
             .Take(criteria.Filter.Take)
             .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<AggregateMatch>> SearchAsync(IAggregateCriteria criteria, CancellationToken token)
+    {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
+        var entities = await BuildQuery(criteria)
+            .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
+            .Take(criteria.Filter.Take)
+            .ToListAsync(token);
+
+        return _adapter.ToMatch(entities);
     }
 
     private IQueryable<TAggregateEntity> BuildQuery(IAggregateCriteria criteria)

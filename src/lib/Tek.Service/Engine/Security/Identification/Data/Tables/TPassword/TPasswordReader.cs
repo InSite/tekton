@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,10 +8,15 @@ namespace Tek.Service.Security;
 public class TPasswordReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<IPasswordCriteria> _validator;
+    private readonly PasswordAdapter _adapter;
 
-    public TPasswordReader(IDbContextFactory<TableDbContext> context)
+    public TPasswordReader(IDbContextFactory<TableDbContext> context, 
+        IValidator<IPasswordCriteria> validator, PasswordAdapter adapter)
     {
         _context = context;
+        _validator = validator;
+        _adapter = adapter;
     }
 
     public async Task<bool> AssertAsync(Guid password, CancellationToken token)
@@ -38,10 +44,24 @@ public class TPasswordReader
 
     public async Task<IEnumerable<TPasswordEntity>> CollectAsync(IPasswordCriteria criteria, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
             .Take(criteria.Filter.Take)
             .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<PasswordMatch>> SearchAsync(IPasswordCriteria criteria, CancellationToken token)
+    {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
+        var entities = await BuildQuery(criteria)
+            .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
+            .Take(criteria.Filter.Take)
+            .ToListAsync(token);
+
+        return _adapter.ToMatch(entities);
     }
 
     private IQueryable<TPasswordEntity> BuildQuery(IPasswordCriteria criteria)

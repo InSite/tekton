@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Security;
 public class TPasswordWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TPasswordEntity> _validator;
 
-    public TPasswordWriter(IDbContextFactory<TableDbContext> context)
+    public TPasswordWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TPasswordEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TPasswordEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.PasswordId, token, db);
@@ -27,6 +33,8 @@ public class TPasswordWriter
         
     public async Task<bool> ModifyAsync(TPasswordEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.PasswordId, token, db);

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Metadata;
 public class TVersionWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TVersionEntity> _validator;
 
-    public TVersionWriter(IDbContextFactory<TableDbContext> context)
+    public TVersionWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TVersionEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TVersionEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.VersionNumber, token, db);
@@ -27,6 +33,8 @@ public class TVersionWriter
         
     public async Task<bool> ModifyAsync(TVersionEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.VersionNumber, token, db);

@@ -15,7 +15,7 @@ public static class SecurityServiceRegistration
         {
             var reflector = new Reflector();
 
-            var relativeUrls = reflector.FindRelativeUrls(typeof(Endpoints));
+            var relativeUrls = reflector.FindRelativeUrls(typeof(CoreEndpoints));
 
             foreach (var relativeUrl in relativeUrls.Keys)
             {

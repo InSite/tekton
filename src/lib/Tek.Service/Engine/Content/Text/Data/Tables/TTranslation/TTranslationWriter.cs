@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Content;
 public class TTranslationWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TTranslationEntity> _validator;
 
-    public TTranslationWriter(IDbContextFactory<TableDbContext> context)
+    public TTranslationWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TTranslationEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TTranslationEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.TranslationId, token, db);
@@ -27,6 +33,8 @@ public class TTranslationWriter
         
     public async Task<bool> ModifyAsync(TTranslationEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.TranslationId, token, db);

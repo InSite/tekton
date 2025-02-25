@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Security;
 public class TPermissionWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TPermissionEntity> _validator;
 
-    public TPermissionWriter(IDbContextFactory<TableDbContext> context)
+    public TPermissionWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TPermissionEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TPermissionEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.PermissionId, token, db);
@@ -27,6 +33,8 @@ public class TPermissionWriter
         
     public async Task<bool> ModifyAsync(TPermissionEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.PermissionId, token, db);

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,10 +8,15 @@ namespace Tek.Service.Metadata;
 public class TOriginReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<IOriginCriteria> _validator;
+    private readonly OriginAdapter _adapter;
 
-    public TOriginReader(IDbContextFactory<TableDbContext> context)
+    public TOriginReader(IDbContextFactory<TableDbContext> context, 
+        IValidator<IOriginCriteria> validator, OriginAdapter adapter)
     {
         _context = context;
+        _validator = validator;
+        _adapter = adapter;
     }
 
     public async Task<bool> AssertAsync(Guid origin, CancellationToken token)
@@ -38,10 +44,24 @@ public class TOriginReader
 
     public async Task<IEnumerable<TOriginEntity>> CollectAsync(IOriginCriteria criteria, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
             .Take(criteria.Filter.Take)
             .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<OriginMatch>> SearchAsync(IOriginCriteria criteria, CancellationToken token)
+    {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
+        var entities = await BuildQuery(criteria)
+            .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
+            .Take(criteria.Filter.Take)
+            .ToListAsync(token);
+
+        return _adapter.ToMatch(entities);
     }
 
     private IQueryable<TOriginEntity> BuildQuery(IOriginCriteria criteria)

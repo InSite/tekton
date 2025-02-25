@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Bus;
 public class TEventWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TEventEntity> _validator;
 
-    public TEventWriter(IDbContextFactory<TableDbContext> context)
+    public TEventWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TEventEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TEventEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.EventId, token, db);
@@ -27,6 +33,8 @@ public class TEventWriter
         
     public async Task<bool> ModifyAsync(TEventEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.EventId, token, db);

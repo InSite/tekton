@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Metadata;
 public class TOriginWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TOriginEntity> _validator;
 
-    public TOriginWriter(IDbContextFactory<TableDbContext> context)
+    public TOriginWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TOriginEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TOriginEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.OriginId, token, db);
@@ -27,6 +33,8 @@ public class TOriginWriter
         
     public async Task<bool> ModifyAsync(TOriginEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.OriginId, token, db);

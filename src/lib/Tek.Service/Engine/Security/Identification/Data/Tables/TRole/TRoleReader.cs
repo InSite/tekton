@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,10 +8,15 @@ namespace Tek.Service.Security;
 public class TRoleReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<IRoleCriteria> _validator;
+    private readonly RoleAdapter _adapter;
 
-    public TRoleReader(IDbContextFactory<TableDbContext> context)
+    public TRoleReader(IDbContextFactory<TableDbContext> context, 
+        IValidator<IRoleCriteria> validator, RoleAdapter adapter)
     {
         _context = context;
+        _validator = validator;
+        _adapter = adapter;
     }
 
     public async Task<bool> AssertAsync(Guid role, CancellationToken token)
@@ -38,10 +44,24 @@ public class TRoleReader
 
     public async Task<IEnumerable<TRoleEntity>> CollectAsync(IRoleCriteria criteria, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
             .Take(criteria.Filter.Take)
             .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<RoleMatch>> SearchAsync(IRoleCriteria criteria, CancellationToken token)
+    {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
+        var entities = await BuildQuery(criteria)
+            .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
+            .Take(criteria.Filter.Take)
+            .ToListAsync(token);
+
+        return _adapter.ToMatch(entities);
     }
 
     private IQueryable<TRoleEntity> BuildQuery(IRoleCriteria criteria)

@@ -25,8 +25,8 @@ public class QueryController : ControllerBase
         _builder = new QueryBuilder(queryTypes, serializer);
     }
 
-    [HttpPost(Endpoints.React.Queries)]
-    [Authorize(Endpoints.React.Queries)]
+    [HttpPost(CoreEndpoints.React.Queries)]
+    [Authorize(CoreEndpoints.React.Queries)]
     public async Task<IActionResult> RunQuery([FromQuery] string q, [FromQuery] Filter filter)
     {
         try

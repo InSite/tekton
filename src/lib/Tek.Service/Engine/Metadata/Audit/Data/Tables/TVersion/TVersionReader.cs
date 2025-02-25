@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,10 +8,15 @@ namespace Tek.Service.Metadata;
 public class TVersionReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<IVersionCriteria> _validator;
+    private readonly VersionAdapter _adapter;
 
-    public TVersionReader(IDbContextFactory<TableDbContext> context)
+    public TVersionReader(IDbContextFactory<TableDbContext> context, 
+        IValidator<IVersionCriteria> validator, VersionAdapter adapter)
     {
         _context = context;
+        _validator = validator;
+        _adapter = adapter;
     }
 
     public async Task<bool> AssertAsync(int versionNumber, CancellationToken token)
@@ -38,10 +44,24 @@ public class TVersionReader
 
     public async Task<IEnumerable<TVersionEntity>> CollectAsync(IVersionCriteria criteria, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
             .Take(criteria.Filter.Take)
             .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<VersionMatch>> SearchAsync(IVersionCriteria criteria, CancellationToken token)
+    {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
+        var entities = await BuildQuery(criteria)
+            .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
+            .Take(criteria.Filter.Take)
+            .ToListAsync(token);
+
+        return _adapter.ToMatch(entities);
     }
 
     private IQueryable<TVersionEntity> BuildQuery(IVersionCriteria criteria)

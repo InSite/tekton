@@ -13,24 +13,14 @@ public class ResourceService
 
     private readonly ResourceAdapter _adapter = new ResourceAdapter();
 
-    private readonly IValidator<IResourceCriteria> _criteriaValidator;
-    private readonly IValidator<TResourceEntity> _entityValidator;
-
-    public ResourceService(TResourceReader reader, TResourceWriter writer,
-        IValidator<IResourceCriteria> criteriaValidator, IValidator<TResourceEntity> entityValidator)
+    public ResourceService(TResourceReader reader, TResourceWriter writer)
     {
         _reader = reader;
         _writer = writer;
-
-        _criteriaValidator = criteriaValidator;
-        _entityValidator = entityValidator;
     }
 
     public async Task<bool> AssertAsync(Guid resource, CancellationToken token)
         => await _reader.AssertAsync(resource, token);
-
-    public async Task<int> CountAsync(IResourceCriteria criteria, CancellationToken token)
-        => await _reader.CountAsync(criteria, token);
 
     public async Task<ResourceModel?> FetchAsync(Guid resource, CancellationToken token)
     {
@@ -39,29 +29,22 @@ public class ResourceService
         return entity != null ? _adapter.ToModel(entity) : null;
     }
 
+    public async Task<int> CountAsync(IResourceCriteria criteria, CancellationToken token)
+        => await _reader.CountAsync(criteria, token);
+
     public async Task<IEnumerable<ResourceModel>> CollectAsync(IResourceCriteria criteria, CancellationToken token)
     {
-        await _criteriaValidator.ValidateAndThrowAsync(criteria, token);
-
         var entities = await _reader.CollectAsync(criteria, token);
 
         return _adapter.ToModel(entities);
     }
 
     public async Task<IEnumerable<ResourceMatch>> SearchAsync(IResourceCriteria criteria, CancellationToken token)
-    {
-        await _criteriaValidator.ValidateAndThrowAsync(criteria, token);
-
-        var entities = await _reader.CollectAsync(criteria, token);
-
-        return _adapter.ToMatch(entities);
-    }
+        => await _reader.SearchAsync(criteria, token);
 
     public async Task<bool> CreateAsync(CreateResource create, CancellationToken token)
     {
         var entity = _adapter.ToEntity(create);
-
-        await _entityValidator.ValidateAndThrowAsync(entity, token);
 
         return await _writer.CreateAsync(entity, token);
     }
@@ -74,8 +57,6 @@ public class ResourceService
             return false;
 
         _adapter.Copy(modify, entity);
-
-        await _entityValidator.ValidateAndThrowAsync(entity, token);
 
         return await _writer.ModifyAsync(entity, token);
     }

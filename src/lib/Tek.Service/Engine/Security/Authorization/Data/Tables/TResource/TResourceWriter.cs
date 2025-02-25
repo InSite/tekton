@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Security;
 public class TResourceWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TResourceEntity> _validator;
 
-    public TResourceWriter(IDbContextFactory<TableDbContext> context)
+    public TResourceWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TResourceEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TResourceEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.ResourceId, token, db);
@@ -27,6 +33,8 @@ public class TResourceWriter
         
     public async Task<bool> ModifyAsync(TResourceEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.ResourceId, token, db);

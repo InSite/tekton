@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Security;
 public class TOrganizationWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TOrganizationEntity> _validator;
 
-    public TOrganizationWriter(IDbContextFactory<TableDbContext> context)
+    public TOrganizationWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TOrganizationEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TOrganizationEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.OrganizationId, token, db);
@@ -27,6 +33,8 @@ public class TOrganizationWriter
         
     public async Task<bool> ModifyAsync(TOrganizationEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.OrganizationId, token, db);

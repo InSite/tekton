@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,10 +8,15 @@ namespace Tek.Service.Bus;
 public class TEventReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<IEventCriteria> _validator;
+    private readonly EventAdapter _adapter;
 
-    public TEventReader(IDbContextFactory<TableDbContext> context)
+    public TEventReader(IDbContextFactory<TableDbContext> context, 
+        IValidator<IEventCriteria> validator, EventAdapter adapter)
     {
         _context = context;
+        _validator = validator;
+        _adapter = adapter;
     }
 
     public async Task<bool> AssertAsync(Guid @event, CancellationToken token)
@@ -38,10 +44,24 @@ public class TEventReader
 
     public async Task<IEnumerable<TEventEntity>> CollectAsync(IEventCriteria criteria, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
             .Take(criteria.Filter.Take)
             .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<EventMatch>> SearchAsync(IEventCriteria criteria, CancellationToken token)
+    {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
+        var entities = await BuildQuery(criteria)
+            .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
+            .Take(criteria.Filter.Take)
+            .ToListAsync(token);
+
+        return _adapter.ToMatch(entities);
     }
 
     private IQueryable<TEventEntity> BuildQuery(IEventCriteria criteria)

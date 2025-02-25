@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,10 +8,15 @@ namespace Tek.Service.Security;
 public class TPermissionReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<IPermissionCriteria> _validator;
+    private readonly PermissionAdapter _adapter;
 
-    public TPermissionReader(IDbContextFactory<TableDbContext> context)
+    public TPermissionReader(IDbContextFactory<TableDbContext> context, 
+        IValidator<IPermissionCriteria> validator, PermissionAdapter adapter)
     {
         _context = context;
+        _validator = validator;
+        _adapter = adapter;
     }
 
     public async Task<bool> AssertAsync(Guid permission, CancellationToken token)
@@ -38,10 +44,24 @@ public class TPermissionReader
 
     public async Task<IEnumerable<TPermissionEntity>> CollectAsync(IPermissionCriteria criteria, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
             .Take(criteria.Filter.Take)
             .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<PermissionMatch>> SearchAsync(IPermissionCriteria criteria, CancellationToken token)
+    {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
+        var entities = await BuildQuery(criteria)
+            .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
+            .Take(criteria.Filter.Take)
+            .ToListAsync(token);
+
+        return _adapter.ToMatch(entities);
     }
 
     private IQueryable<TPermissionEntity> BuildQuery(IPermissionCriteria criteria)

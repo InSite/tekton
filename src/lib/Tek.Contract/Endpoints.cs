@@ -1,6 +1,6 @@
 namespace Tek.Contract
 {
-    public static partial class Endpoints
+    public static partial class CoreEndpoints
     {
         public const string Token = "api/token";
         public const string Validate = "api/token/validate";

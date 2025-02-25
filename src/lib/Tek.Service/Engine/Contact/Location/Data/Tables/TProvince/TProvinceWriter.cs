@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Contact;
 public class TProvinceWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TProvinceEntity> _validator;
 
-    public TProvinceWriter(IDbContextFactory<TableDbContext> context)
+    public TProvinceWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TProvinceEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TProvinceEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.ProvinceId, token, db);
@@ -27,6 +33,8 @@ public class TProvinceWriter
         
     public async Task<bool> ModifyAsync(TProvinceEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.ProvinceId, token, db);

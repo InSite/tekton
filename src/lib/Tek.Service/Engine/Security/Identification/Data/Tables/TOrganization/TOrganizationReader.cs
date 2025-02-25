@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,10 +8,15 @@ namespace Tek.Service.Security;
 public class TOrganizationReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<IOrganizationCriteria> _validator;
+    private readonly OrganizationAdapter _adapter;
 
-    public TOrganizationReader(IDbContextFactory<TableDbContext> context)
+    public TOrganizationReader(IDbContextFactory<TableDbContext> context, 
+        IValidator<IOrganizationCriteria> validator, OrganizationAdapter adapter)
     {
         _context = context;
+        _validator = validator;
+        _adapter = adapter;
     }
 
     public async Task<bool> AssertAsync(Guid organization, CancellationToken token)
@@ -38,10 +44,24 @@ public class TOrganizationReader
 
     public async Task<IEnumerable<TOrganizationEntity>> CollectAsync(IOrganizationCriteria criteria, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
             .Take(criteria.Filter.Take)
             .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<OrganizationMatch>> SearchAsync(IOrganizationCriteria criteria, CancellationToken token)
+    {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
+        var entities = await BuildQuery(criteria)
+            .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
+            .Take(criteria.Filter.Take)
+            .ToListAsync(token);
+
+        return _adapter.ToMatch(entities);
     }
 
     private IQueryable<TOrganizationEntity> BuildQuery(IOrganizationCriteria criteria)

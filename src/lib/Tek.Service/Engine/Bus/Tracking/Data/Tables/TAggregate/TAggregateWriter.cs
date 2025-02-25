@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Bus;
 public class TAggregateWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TAggregateEntity> _validator;
 
-    public TAggregateWriter(IDbContextFactory<TableDbContext> context)
+    public TAggregateWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TAggregateEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TAggregateEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.AggregateId, token, db);
@@ -27,6 +33,8 @@ public class TAggregateWriter
         
     public async Task<bool> ModifyAsync(TAggregateEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.AggregateId, token, db);

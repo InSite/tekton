@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,14 +8,19 @@ namespace Tek.Service.Security;
 public class TPartitionWriter
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<TPartitionEntity> _validator;
 
-    public TPartitionWriter(IDbContextFactory<TableDbContext> context)
+    public TPartitionWriter(IDbContextFactory<TableDbContext> context,
+        IValidator<TPartitionEntity> validator)
     {
         _context = context;
+        _validator = validator;
     }
 
     public async Task<bool> CreateAsync(TPartitionEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.PartitionNumber, token, db);
@@ -27,6 +33,8 @@ public class TPartitionWriter
         
     public async Task<bool> ModifyAsync(TPartitionEntity entity, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(entity, token);
+        
         using var db = _context.CreateDbContext();
 
         var exists = await AssertAsync(entity.PartitionNumber, token, db);

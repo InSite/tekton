@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Tek.Contract.Engine;
@@ -7,10 +8,15 @@ namespace Tek.Service.Content;
 public class TTranslationReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
+    private readonly IValidator<ITranslationCriteria> _validator;
+    private readonly TranslationAdapter _adapter;
 
-    public TTranslationReader(IDbContextFactory<TableDbContext> context)
+    public TTranslationReader(IDbContextFactory<TableDbContext> context, 
+        IValidator<ITranslationCriteria> validator, TranslationAdapter adapter)
     {
         _context = context;
+        _validator = validator;
+        _adapter = adapter;
     }
 
     public async Task<bool> AssertAsync(Guid translation, CancellationToken token)
@@ -38,10 +44,24 @@ public class TTranslationReader
 
     public async Task<IEnumerable<TTranslationEntity>> CollectAsync(ITranslationCriteria criteria, CancellationToken token)
     {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
             .Take(criteria.Filter.Take)
             .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<TranslationMatch>> SearchAsync(ITranslationCriteria criteria, CancellationToken token)
+    {
+        await _validator.ValidateAndThrowAsync(criteria, token);
+        
+        var entities = await BuildQuery(criteria)
+            .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)
+            .Take(criteria.Filter.Take)
+            .ToListAsync(token);
+
+        return _adapter.ToMatch(entities);
     }
 
     private IQueryable<TTranslationEntity> BuildQuery(ITranslationCriteria criteria)
