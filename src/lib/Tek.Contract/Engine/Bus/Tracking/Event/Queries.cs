@@ -51,7 +51,7 @@ namespace Tek.Contract.Engine
     public interface IEventCriteria
     {
         Filter Filter { get; set; }
-
+        
         Guid AggregateId { get; set; }
         Guid OriginId { get; set; }
 

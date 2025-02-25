@@ -41,19 +41,4 @@ namespace Tek.Contract.Engine
     {
         public Guid PasswordId { get; set; }
     }
-
-    public class ExportPasswords
-    {
-        public ICollection<CreatePassword> Items { get; set; }
-    }
-
-    public class ImportPasswords
-    {
-        public ICollection<CreatePassword> Items { get; set; }
-    }
-
-    public class PurgePasswords
-    {
-        public ICollection<DeletePassword> Items { get; set; }
-    }
 }

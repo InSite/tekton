@@ -25,19 +25,4 @@ namespace Tek.Contract.Engine
     {
         public Guid AggregateId { get; set; }
     }
-
-    public class ExportAggregates
-    {
-        public ICollection<CreateAggregate> Items { get; set; }
-    }
-
-    public class ImportAggregates
-    {
-        public ICollection<CreateAggregate> Items { get; set; }
-    }
-
-    public class PurgeAggregates
-    {
-        public ICollection<DeleteAggregate> Items { get; set; }
-    }
 }

@@ -25,19 +25,4 @@ namespace Tek.Contract.Engine
     {
         public Guid ResourceId { get; set; }
     }
-
-    public class ExportResources
-    {
-        public ICollection<CreateResource> Items { get; set; }
-    }
-
-    public class ImportResources
-    {
-        public ICollection<CreateResource> Items { get; set; }
-    }
-
-    public class PurgeResources
-    {
-        public ICollection<DeleteResource> Items { get; set; }
-    }
 }

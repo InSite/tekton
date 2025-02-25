@@ -8,9 +8,9 @@ using Tek.Service.Security;
 
 namespace Tek.Service;
 
-internal class TableDbContext : DbContext
+public class TableDbContext : DbContext
 {
-    internal TableDbContext(DbContextOptions options) : base(options) { }
+    public TableDbContext(DbContextOptions options) : base(options) { }
 
     #region Storage Tables
 

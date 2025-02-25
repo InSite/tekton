@@ -29,19 +29,4 @@ namespace Tek.Contract.Engine
     {
         public Guid ProvinceId { get; set; }
     }
-
-    public class ExportProvinces
-    {
-        public ICollection<CreateProvince> Items { get; set; }
-    }
-
-    public class ImportProvinces
-    {
-        public ICollection<CreateProvince> Items { get; set; }
-    }
-
-    public class PurgeProvinces
-    {
-        public ICollection<DeleteProvince> Items { get; set; }
-    }
 }

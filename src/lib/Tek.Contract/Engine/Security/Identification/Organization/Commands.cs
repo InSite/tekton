@@ -35,19 +35,4 @@ namespace Tek.Contract.Engine
     {
         public Guid OrganizationId { get; set; }
     }
-
-    public class ExportOrganizations
-    {
-        public ICollection<CreateOrganization> Items { get; set; }
-    }
-
-    public class ImportOrganizations
-    {
-        public ICollection<CreateOrganization> Items { get; set; }
-    }
-
-    public class PurgeOrganizations
-    {
-        public ICollection<DeleteOrganization> Items { get; set; }
-    }
 }

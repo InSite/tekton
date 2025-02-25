@@ -4,16 +4,16 @@ using Tek.Contract.Engine;
 
 namespace Tek.Service.Bus;
 
-internal class TEventReader
+public class TEventReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
 
-    internal TEventReader(IDbContextFactory<TableDbContext> context)
+    public TEventReader(IDbContextFactory<TableDbContext> context)
     {
         _context = context;
     }
 
-    internal async Task<bool> AssertAsync(Guid @event, CancellationToken token)
+    public async Task<bool> AssertAsync(Guid @event, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -21,7 +21,7 @@ internal class TEventReader
             .AnyAsync(x => x.EventId == @event, token);
     }
 
-    internal async Task<TEventEntity?> FetchAsync(Guid @event, CancellationToken token)
+    public async Task<TEventEntity?> FetchAsync(Guid @event, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -30,13 +30,13 @@ internal class TEventReader
             .FirstOrDefaultAsync(x => x.EventId == @event, token);
     }
 
-    internal async Task<int> CountAsync(IEventCriteria criteria, CancellationToken token)
+    public async Task<int> CountAsync(IEventCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .CountAsync(token);
     }
 
-    internal async Task<IEnumerable<TEventEntity>> CollectAsync(IEventCriteria criteria, CancellationToken token)
+    public async Task<IEnumerable<TEventEntity>> CollectAsync(IEventCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)

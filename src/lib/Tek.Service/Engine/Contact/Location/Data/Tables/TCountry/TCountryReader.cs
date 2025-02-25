@@ -4,16 +4,16 @@ using Tek.Contract.Engine;
 
 namespace Tek.Service.Contact;
 
-internal class TCountryReader
+public class TCountryReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
 
-    internal TCountryReader(IDbContextFactory<TableDbContext> context)
+    public TCountryReader(IDbContextFactory<TableDbContext> context)
     {
         _context = context;
     }
 
-    internal async Task<bool> AssertAsync(Guid country, CancellationToken token)
+    public async Task<bool> AssertAsync(Guid country, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -21,7 +21,7 @@ internal class TCountryReader
             .AnyAsync(x => x.CountryId == country, token);
     }
 
-    internal async Task<TCountryEntity?> FetchAsync(Guid country, CancellationToken token)
+    public async Task<TCountryEntity?> FetchAsync(Guid country, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -30,13 +30,13 @@ internal class TCountryReader
             .FirstOrDefaultAsync(x => x.CountryId == country, token);
     }
 
-    internal async Task<int> CountAsync(ICountryCriteria criteria, CancellationToken token)
+    public async Task<int> CountAsync(ICountryCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .CountAsync(token);
     }
 
-    internal async Task<IEnumerable<TCountryEntity>> CollectAsync(ICountryCriteria criteria, CancellationToken token)
+    public async Task<IEnumerable<TCountryEntity>> CollectAsync(ICountryCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)

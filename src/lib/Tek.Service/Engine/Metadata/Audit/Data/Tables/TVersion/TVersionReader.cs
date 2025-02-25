@@ -4,16 +4,16 @@ using Tek.Contract.Engine;
 
 namespace Tek.Service.Metadata;
 
-internal class TVersionReader
+public class TVersionReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
 
-    internal TVersionReader(IDbContextFactory<TableDbContext> context)
+    public TVersionReader(IDbContextFactory<TableDbContext> context)
     {
         _context = context;
     }
 
-    internal async Task<bool> AssertAsync(int versionNumber, CancellationToken token)
+    public async Task<bool> AssertAsync(int versionNumber, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -21,7 +21,7 @@ internal class TVersionReader
             .AnyAsync(x => x.VersionNumber == versionNumber, token);
     }
 
-    internal async Task<TVersionEntity?> FetchAsync(int versionNumber, CancellationToken token)
+    public async Task<TVersionEntity?> FetchAsync(int versionNumber, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -30,13 +30,13 @@ internal class TVersionReader
             .FirstOrDefaultAsync(x => x.VersionNumber == versionNumber, token);
     }
 
-    internal async Task<int> CountAsync(IVersionCriteria criteria, CancellationToken token)
+    public async Task<int> CountAsync(IVersionCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .CountAsync(token);
     }
 
-    internal async Task<IEnumerable<TVersionEntity>> CollectAsync(IVersionCriteria criteria, CancellationToken token)
+    public async Task<IEnumerable<TVersionEntity>> CollectAsync(IVersionCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)

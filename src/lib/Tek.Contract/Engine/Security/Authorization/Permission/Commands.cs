@@ -31,19 +31,4 @@ namespace Tek.Contract.Engine
     {
         public Guid PermissionId { get; set; }
     }
-
-    public class ExportPermissions
-    {
-        public ICollection<CreatePermission> Items { get; set; }
-    }
-
-    public class ImportPermissions
-    {
-        public ICollection<CreatePermission> Items { get; set; }
-    }
-
-    public class PurgePermissions
-    {
-        public ICollection<DeletePermission> Items { get; set; }
-    }
 }

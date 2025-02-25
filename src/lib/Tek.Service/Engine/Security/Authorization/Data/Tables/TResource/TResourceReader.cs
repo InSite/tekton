@@ -4,16 +4,16 @@ using Tek.Contract.Engine;
 
 namespace Tek.Service.Security;
 
-internal class TResourceReader
+public class TResourceReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
 
-    internal TResourceReader(IDbContextFactory<TableDbContext> context)
+    public TResourceReader(IDbContextFactory<TableDbContext> context)
     {
         _context = context;
     }
 
-    internal async Task<bool> AssertAsync(Guid resource, CancellationToken token)
+    public async Task<bool> AssertAsync(Guid resource, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -21,7 +21,7 @@ internal class TResourceReader
             .AnyAsync(x => x.ResourceId == resource, token);
     }
 
-    internal async Task<TResourceEntity?> FetchAsync(Guid resource, CancellationToken token)
+    public async Task<TResourceEntity?> FetchAsync(Guid resource, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -30,13 +30,13 @@ internal class TResourceReader
             .FirstOrDefaultAsync(x => x.ResourceId == resource, token);
     }
 
-    internal async Task<int> CountAsync(IResourceCriteria criteria, CancellationToken token)
+    public async Task<int> CountAsync(IResourceCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .CountAsync(token);
     }
 
-    internal async Task<IEnumerable<TResourceEntity>> CollectAsync(IResourceCriteria criteria, CancellationToken token)
+    public async Task<IEnumerable<TResourceEntity>> CollectAsync(IResourceCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)

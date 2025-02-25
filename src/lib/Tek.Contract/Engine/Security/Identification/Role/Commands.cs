@@ -25,19 +25,4 @@ namespace Tek.Contract.Engine
     {
         public Guid RoleId { get; set; }
     }
-
-    public class ExportRoles
-    {
-        public ICollection<CreateRole> Items { get; set; }
-    }
-
-    public class ImportRoles
-    {
-        public ICollection<CreateRole> Items { get; set; }
-    }
-
-    public class PurgeRoles
-    {
-        public ICollection<DeleteRole> Items { get; set; }
-    }
 }

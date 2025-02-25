@@ -4,16 +4,16 @@ using Tek.Contract.Engine;
 
 namespace Tek.Service.Security;
 
-internal class TOrganizationReader
+public class TOrganizationReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
 
-    internal TOrganizationReader(IDbContextFactory<TableDbContext> context)
+    public TOrganizationReader(IDbContextFactory<TableDbContext> context)
     {
         _context = context;
     }
 
-    internal async Task<bool> AssertAsync(Guid organization, CancellationToken token)
+    public async Task<bool> AssertAsync(Guid organization, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -21,7 +21,7 @@ internal class TOrganizationReader
             .AnyAsync(x => x.OrganizationId == organization, token);
     }
 
-    internal async Task<TOrganizationEntity?> FetchAsync(Guid organization, CancellationToken token)
+    public async Task<TOrganizationEntity?> FetchAsync(Guid organization, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -30,13 +30,13 @@ internal class TOrganizationReader
             .FirstOrDefaultAsync(x => x.OrganizationId == organization, token);
     }
 
-    internal async Task<int> CountAsync(IOrganizationCriteria criteria, CancellationToken token)
+    public async Task<int> CountAsync(IOrganizationCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .CountAsync(token);
     }
 
-    internal async Task<IEnumerable<TOrganizationEntity>> CollectAsync(IOrganizationCriteria criteria, CancellationToken token)
+    public async Task<IEnumerable<TOrganizationEntity>> CollectAsync(IOrganizationCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)

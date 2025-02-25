@@ -37,19 +37,4 @@ namespace Tek.Contract.Engine
     {
         public Guid CountryId { get; set; }
     }
-
-    public class ExportCountries
-    {
-        public ICollection<CreateCountry> Items { get; set; }
-    }
-
-    public class ImportCountries
-    {
-        public ICollection<CreateCountry> Items { get; set; }
-    }
-
-    public class PurgeCountries
-    {
-        public ICollection<DeleteCountry> Items { get; set; }
-    }
 }

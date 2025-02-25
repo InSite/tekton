@@ -39,19 +39,4 @@ namespace Tek.Contract.Engine
     {
         public Guid OriginId { get; set; }
     }
-
-    public class ExportOrigins
-    {
-        public ICollection<CreateOrigin> Items { get; set; }
-    }
-
-    public class ImportOrigins
-    {
-        public ICollection<CreateOrigin> Items { get; set; }
-    }
-
-    public class PurgeOrigins
-    {
-        public ICollection<DeleteOrigin> Items { get; set; }
-    }
 }

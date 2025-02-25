@@ -4,16 +4,16 @@ using Tek.Contract.Engine;
 
 namespace Tek.Service.Security;
 
-internal class TPartitionReader
+public class TPartitionReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
 
-    internal TPartitionReader(IDbContextFactory<TableDbContext> context)
+    public TPartitionReader(IDbContextFactory<TableDbContext> context)
     {
         _context = context;
     }
 
-    internal async Task<bool> AssertAsync(int partitionNumber, CancellationToken token)
+    public async Task<bool> AssertAsync(int partitionNumber, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -21,7 +21,7 @@ internal class TPartitionReader
             .AnyAsync(x => x.PartitionNumber == partitionNumber, token);
     }
 
-    internal async Task<TPartitionEntity?> FetchAsync(int partitionNumber, CancellationToken token)
+    public async Task<TPartitionEntity?> FetchAsync(int partitionNumber, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -30,13 +30,13 @@ internal class TPartitionReader
             .FirstOrDefaultAsync(x => x.PartitionNumber == partitionNumber, token);
     }
 
-    internal async Task<int> CountAsync(IPartitionCriteria criteria, CancellationToken token)
+    public async Task<int> CountAsync(IPartitionCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .CountAsync(token);
     }
 
-    internal async Task<IEnumerable<TPartitionEntity>> CollectAsync(IPartitionCriteria criteria, CancellationToken token)
+    public async Task<IEnumerable<TPartitionEntity>> CollectAsync(IPartitionCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)

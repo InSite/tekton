@@ -33,19 +33,4 @@ namespace Tek.Contract.Engine
     {
         public Guid EventId { get; set; }
     }
-
-    public class ExportEvents
-    {
-        public ICollection<CreateEvent> Items { get; set; }
-    }
-
-    public class ImportEvents
-    {
-        public ICollection<CreateEvent> Items { get; set; }
-    }
-
-    public class PurgeEvents
-    {
-        public ICollection<DeleteEvent> Items { get; set; }
-    }
 }

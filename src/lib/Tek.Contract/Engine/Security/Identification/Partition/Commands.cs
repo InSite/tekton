@@ -37,19 +37,4 @@ namespace Tek.Contract.Engine
     {
         public int PartitionNumber { get; set; }
     }
-
-    public class ExportPartitions
-    {
-        public ICollection<CreatePartition> Items { get; set; }
-    }
-
-    public class ImportPartitions
-    {
-        public ICollection<CreatePartition> Items { get; set; }
-    }
-
-    public class PurgePartitions
-    {
-        public ICollection<DeletePartition> Items { get; set; }
-    }
 }

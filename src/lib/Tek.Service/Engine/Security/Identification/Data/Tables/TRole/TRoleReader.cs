@@ -4,16 +4,16 @@ using Tek.Contract.Engine;
 
 namespace Tek.Service.Security;
 
-internal class TRoleReader
+public class TRoleReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
 
-    internal TRoleReader(IDbContextFactory<TableDbContext> context)
+    public TRoleReader(IDbContextFactory<TableDbContext> context)
     {
         _context = context;
     }
 
-    internal async Task<bool> AssertAsync(Guid role, CancellationToken token)
+    public async Task<bool> AssertAsync(Guid role, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -21,7 +21,7 @@ internal class TRoleReader
             .AnyAsync(x => x.RoleId == role, token);
     }
 
-    internal async Task<TRoleEntity?> FetchAsync(Guid role, CancellationToken token)
+    public async Task<TRoleEntity?> FetchAsync(Guid role, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -30,13 +30,13 @@ internal class TRoleReader
             .FirstOrDefaultAsync(x => x.RoleId == role, token);
     }
 
-    internal async Task<int> CountAsync(IRoleCriteria criteria, CancellationToken token)
+    public async Task<int> CountAsync(IRoleCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .CountAsync(token);
     }
 
-    internal async Task<IEnumerable<TRoleEntity>> CollectAsync(IRoleCriteria criteria, CancellationToken token)
+    public async Task<IEnumerable<TRoleEntity>> CollectAsync(IRoleCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)

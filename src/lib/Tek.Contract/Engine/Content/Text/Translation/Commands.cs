@@ -27,19 +27,4 @@ namespace Tek.Contract.Engine
     {
         public Guid TranslationId { get; set; }
     }
-
-    public class ExportTranslations
-    {
-        public ICollection<CreateTranslation> Items { get; set; }
-    }
-
-    public class ImportTranslations
-    {
-        public ICollection<CreateTranslation> Items { get; set; }
-    }
-
-    public class PurgeTranslations
-    {
-        public ICollection<DeleteTranslation> Items { get; set; }
-    }
 }

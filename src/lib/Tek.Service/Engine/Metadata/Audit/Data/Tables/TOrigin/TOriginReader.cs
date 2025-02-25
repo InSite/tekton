@@ -4,16 +4,16 @@ using Tek.Contract.Engine;
 
 namespace Tek.Service.Metadata;
 
-internal class TOriginReader
+public class TOriginReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
 
-    internal TOriginReader(IDbContextFactory<TableDbContext> context)
+    public TOriginReader(IDbContextFactory<TableDbContext> context)
     {
         _context = context;
     }
 
-    internal async Task<bool> AssertAsync(Guid origin, CancellationToken token)
+    public async Task<bool> AssertAsync(Guid origin, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -21,7 +21,7 @@ internal class TOriginReader
             .AnyAsync(x => x.OriginId == origin, token);
     }
 
-    internal async Task<TOriginEntity?> FetchAsync(Guid origin, CancellationToken token)
+    public async Task<TOriginEntity?> FetchAsync(Guid origin, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -30,13 +30,13 @@ internal class TOriginReader
             .FirstOrDefaultAsync(x => x.OriginId == origin, token);
     }
 
-    internal async Task<int> CountAsync(IOriginCriteria criteria, CancellationToken token)
+    public async Task<int> CountAsync(IOriginCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .CountAsync(token);
     }
 
-    internal async Task<IEnumerable<TOriginEntity>> CollectAsync(IOriginCriteria criteria, CancellationToken token)
+    public async Task<IEnumerable<TOriginEntity>> CollectAsync(IOriginCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)

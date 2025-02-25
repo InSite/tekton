@@ -4,16 +4,16 @@ using Tek.Contract.Engine;
 
 namespace Tek.Service.Content;
 
-internal class TTranslationReader
+public class TTranslationReader
 {
     private readonly IDbContextFactory<TableDbContext> _context;
 
-    internal TTranslationReader(IDbContextFactory<TableDbContext> context)
+    public TTranslationReader(IDbContextFactory<TableDbContext> context)
     {
         _context = context;
     }
 
-    internal async Task<bool> AssertAsync(Guid translation, CancellationToken token)
+    public async Task<bool> AssertAsync(Guid translation, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -21,7 +21,7 @@ internal class TTranslationReader
             .AnyAsync(x => x.TranslationId == translation, token);
     }
 
-    internal async Task<TTranslationEntity?> FetchAsync(Guid translation, CancellationToken token)
+    public async Task<TTranslationEntity?> FetchAsync(Guid translation, CancellationToken token)
     {
         using var db = _context.CreateDbContext();
 
@@ -30,13 +30,13 @@ internal class TTranslationReader
             .FirstOrDefaultAsync(x => x.TranslationId == translation, token);
     }
 
-    internal async Task<int> CountAsync(ITranslationCriteria criteria, CancellationToken token)
+    public async Task<int> CountAsync(ITranslationCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .CountAsync(token);
     }
 
-    internal async Task<IEnumerable<TTranslationEntity>> CollectAsync(ITranslationCriteria criteria, CancellationToken token)
+    public async Task<IEnumerable<TTranslationEntity>> CollectAsync(ITranslationCriteria criteria, CancellationToken token)
     {
         return await BuildQuery(criteria)
             .Skip((criteria.Filter.Page - 1) * criteria.Filter.Take)

@@ -33,19 +33,4 @@ namespace Tek.Contract.Engine
     {
         public int VersionNumber { get; set; }
     }
-
-    public class ExportVersions
-    {
-        public ICollection<CreateVersion> Items { get; set; }
-    }
-
-    public class ImportVersions
-    {
-        public ICollection<CreateVersion> Items { get; set; }
-    }
-
-    public class PurgeVersions
-    {
-        public ICollection<DeleteVersion> Items { get; set; }
-    }
 }
