@@ -56,17 +56,33 @@ namespace Tek.Toolbox
 
         public bool Validate(string scheme, string token, string secret, string audience, string issuer, IClaimConverter converter, out ClaimsPrincipal principal)
         {
-            var jwt = Decode(token);
+            try
+            {
+                var jwt = Decode(token);
 
-            principal = new ClaimsPrincipal(converter.ToClaimsIdentity(jwt, scheme));
+                principal = new ClaimsPrincipal(converter.ToClaimsIdentity(jwt, scheme));
 
-            var isSignatureVerified = VerifySignature(token, secret);
+                var isSignatureVerified = VerifySignature(token, secret);
 
-            var isAudienceVerified = jwt.Audience == audience;
+                var isAudienceVerified = jwt.Audience == audience;
 
-            var isIssuerVerified = jwt.Issuer == issuer;
+                var isIssuerVerified = jwt.Issuer == issuer;
 
-            return isSignatureVerified && !jwt.IsExpired() && isAudienceVerified && isIssuerVerified;
+                return isSignatureVerified && !jwt.IsExpired() && isAudienceVerified && isIssuerVerified;
+            }
+            catch (ArgumentException ex)
+            {
+                if (ex.Message.StartsWith("JWT parsing failed"))
+                {
+                    principal = null;
+
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         public string Encode(IJwt jwt, string secret)

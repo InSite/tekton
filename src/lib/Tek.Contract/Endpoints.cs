@@ -17,6 +17,7 @@ namespace Tek.Contract
 
         public static class React
         {
+            public const string Commands = "react/commands";
             public const string Queries = "react/queries";
         }
     }
