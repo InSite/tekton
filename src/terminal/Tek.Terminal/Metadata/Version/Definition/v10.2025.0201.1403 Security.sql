@@ -69,3 +69,14 @@ CREATE TABLE security.t_permission (
     resource_id UUID NOT NULL,
     role_id UUID NOT NULL
 );
+
+CREATE TABLE security.t_secret (
+    password_id UUID NOT NULL,
+    secret_id UUID NOT NULL PRIMARY KEY,
+    secret_type VARCHAR(30) NOT NULL,
+    secret_name VARCHAR(100) NOT NULL,
+    secret_value VARCHAR(100) NOT NULL,
+    secret_scope VARCHAR(30) NOT NULL,
+    secret_expiry TIMESTAMPTZ NOT NULL,
+    secret_limetime_limit INT NULL    
+);

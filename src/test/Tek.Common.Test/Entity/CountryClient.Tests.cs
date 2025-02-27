@@ -1,6 +1,6 @@
 ﻿using Tek.Toolbox;
 
-namespace Tek.Common.Engine.Test;
+namespace Tek.Common.Test;
 
 [Trait("Category", "SDK")]
 public class CountryClientTests
@@ -23,9 +23,9 @@ public class CountryClientTests
 
         var api = new ApiClient(factory, serializer);
 
-        var response = api.HttpPost<string>("token", new { Secret = secret });
+        var response = await api.HttpPost<string>("token", new { Secret = secret });
 
-        factory = new HttpClientFactory(new Uri(host), response.Result.Data);
+        factory = new HttpClientFactory(new Uri(host), response.Data);
 
         api = new ApiClient(factory, serializer);
 
