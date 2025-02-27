@@ -47,7 +47,7 @@ namespace Tek.Common
 
         public void FindConstants(Type type, string constant, Dictionary<string, string> dictionary)
         {
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
 
             foreach (var field in fields)
             {
@@ -66,7 +66,7 @@ namespace Tek.Common
                 }
             }
 
-            foreach (var nestedType in type.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+            foreach (var nestedType in type.GetNestedTypes(BindingFlags.Public | BindingFlags.Static))
             {
                 FindConstants(nestedType, constant, dictionary);
             }
@@ -85,7 +85,8 @@ namespace Tek.Common
                 var constantValue = constantUrls[constantName];
 
                 if (!relativeUrls.ContainsKey(constantValue))
-                    relativeUrls.Add(constantValue, constantName);
+                    if (!constantName.EndsWith(".Name"))
+                        relativeUrls.Add(constantValue, constantName);
             }
 
             RelativeUrlCollection.AddParents(relativeUrls);

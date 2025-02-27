@@ -1,8 +1,13 @@
+using System.Reflection;
+
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Serilog;
 
 using Tek.Service;
+using Tek.Service.Contact;
+using Tek.Service.Security;
 
 // Step 1. Load configuration settings before doing anything else.
 
@@ -61,12 +66,8 @@ WebApplication BuildHost(TektonSettings settings)
     services.AddSecurity(settings.Security);
 
     services.AddSingleton<IJsonSerializer, JsonSerializer>();
-    services.AddTransient<LocationDbContext, LocationDbContext>();
 
-    /* TODO: 
-    services.AddDbContextFactory<TableDbContext>(options =>
-            options.UseNpgsql(PostgresDbContext.CreateConnectionString(settings.Database.Connection))
-        );*/
+    AddStorage(services);
 
     services.AddControllers().AddJsonOptions(options =>
     {
@@ -91,6 +92,30 @@ WebApplication BuildHost(TektonSettings settings)
     host.MapControllers();
 
     return host;
+}
+
+void AddStorage(IServiceCollection services)
+{
+    services.AddDbContextFactory<TableDbContext>(options =>
+            options.UseNpgsql(PostgresDbContext.CreateConnectionString(settings.Database.Connection))
+        );
+
+    var assembly = typeof(TableDbContext).Assembly;
+
+    var adapterTypes = assembly.GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && (
+                typeof(IEntityAdapter).IsAssignableFrom(t) ||
+                typeof(IEntityReader).IsAssignableFrom(t) ||
+                typeof(IEntityService).IsAssignableFrom(t) ||
+                typeof(IEntityWriter).IsAssignableFrom(t) 
+                )
+            )
+            .ToList();
+
+    foreach (var type in adapterTypes)
+    {
+        services.AddTransient(type);
+    }
 }
 
 async Task Startup(WebApplication host)

@@ -16,22 +16,22 @@ public class DebugController : ControllerBase
         _claimConverter = principalAdapter;
     }
 
-    [HttpGet(CoreEndpoints.Debug.Endpoints)]
-    [Authorize(CoreEndpoints.Debug.Endpoints)]
+    [HttpGet(Endpoints.Debug.Endpoints)]
+    [Authorize(Endpoints.Debug.Endpoints)]
     [ApiExplorerSettings(GroupName = "Security: Debug")]
-    public IActionResult DebugPaths()
+    public IActionResult DebugEndpoints()
     {
         var reflector = new Reflector();
 
-        var paths = reflector.FindRelativeUrls(typeof(CoreEndpoints))
+        var endpoints = reflector.FindRelativeUrls(typeof(Endpoints))
             .OrderBy(x => x.Key)
             .ToDictionary(x => x.Key, x => x.Value);
 
-        return Ok(paths);
+        return Ok(endpoints);
     }
 
-    [HttpGet(CoreEndpoints.Debug.Permissions)]
-    [Authorize(CoreEndpoints.Debug.Permissions)]
+    [HttpGet(Endpoints.Debug.Permissions)]
+    [Authorize(Endpoints.Debug.Permissions)]
     [ApiExplorerSettings(GroupName = "Security: Debug")]
     public IActionResult DebugPermissions()
     {
@@ -45,8 +45,8 @@ public class DebugController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet(CoreEndpoints.Debug.Resources)]
-    [Authorize(CoreEndpoints.Debug.Resources)]
+    [HttpGet(Endpoints.Debug.Resources)]
+    [Authorize(Endpoints.Debug.Resources)]
     [ApiExplorerSettings(GroupName = "Security: Debug")]
     public IActionResult DebugResources()
     {
@@ -60,8 +60,8 @@ public class DebugController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet(CoreEndpoints.Debug.Token)]
-    [Authorize(CoreEndpoints.Debug.Token)]
+    [HttpGet(Endpoints.Debug.Token)]
+    [Authorize(Endpoints.Debug.Token)]
     [ApiExplorerSettings(GroupName = "Security: Debug")]
     public IActionResult DebugToken()
     {

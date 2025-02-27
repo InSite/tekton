@@ -22,7 +22,7 @@ public class TokenController : ControllerBase
         _claimConverter = claimConverter;
     }
 
-    [HttpPost(CoreEndpoints.Token)]
+    [HttpPost(Endpoints.Token)]
     public IActionResult GenerateToken([FromBody] JwtRequest request)
     {
         var ip = GetClientIPAddress();
@@ -51,7 +51,7 @@ public class TokenController : ControllerBase
         return Ok(jwt);
     }
 
-    [HttpPost(CoreEndpoints.Validate)]
+    [HttpPost(Endpoints.Validate)]
     public async Task<IActionResult> ValidateToken()
     {
         var token = string.Empty;
@@ -87,7 +87,7 @@ public class TokenController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet(CoreEndpoints.Status)]
+    [HttpGet(Endpoints.Status)]
     public IActionResult GetStatus()
     {
         var version = typeof(TokenController).Assembly.GetName().Version;
@@ -95,7 +95,7 @@ public class TokenController : ControllerBase
         return Ok(status);
     }
 
-    [HttpGet(CoreEndpoints.Version)]
+    [HttpGet(Endpoints.Version)]
     public IActionResult GetVersion()
     {
         var version = typeof(TokenController).Assembly.GetName().Version?.ToString() ?? "0.0.0.0";

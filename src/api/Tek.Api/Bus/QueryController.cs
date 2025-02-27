@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Tek.Api;
 
 [ApiController]
-[ApiExplorerSettings(GroupName = "Bus: Query")]
+[ApiExplorerSettings(GroupName = "React: Query")]
 public class QueryController : ControllerBase
 {
     private readonly Authorizer _authorizer;
@@ -25,8 +25,8 @@ public class QueryController : ControllerBase
         _builder = new QueryBuilder(queryTypes, serializer);
     }
 
-    [HttpPost(CoreEndpoints.React.Queries)]
-    [Authorize(CoreEndpoints.React.Queries)]
+    [HttpPost(Endpoints.React.Queries)]
+    [Authorize(Endpoints.React.Queries)]
     public async Task<IActionResult> RunQuery([FromQuery] string q, [FromQuery] Filter filter)
     {
         try

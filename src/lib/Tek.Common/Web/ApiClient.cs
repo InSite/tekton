@@ -176,7 +176,20 @@ namespace Tek.Common
 
                     try
                     {
-                        status.Data = _serializer.Deserialize<T>(responseContent);
+                        try
+                        {
+                            status.Data = _serializer.Deserialize<T>(responseContent);
+                        }
+                        catch
+                        {
+                            // If deserialization fails, and if the expected data type for the
+                            // response is a string, then we can use the raw response content.
+
+                            if (typeof(T) == typeof(string) && responseContent is T castedToString)
+                                status.Data = castedToString;
+                            else
+                                throw;
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -277,64 +290,64 @@ namespace Tek.Common
         public async Task<ApiResult<T>> HttpGet<T>(string endpoint, int id)
             => await HttpGet<T>(endpoint, id.ToString());
 
-        public async Task HttpPut(string endpoint, string id, object payload)
+        public async Task<ApiResult> HttpPut(string endpoint, string id, object payload)
             => await HttpPut(endpoint, new[] { id }, payload);
 
-        public async Task HttpPut(string endpoint, int id, object payload)
-            => await HttpPut(endpoint, id.ToString(), payload);
+        public async Task<ApiResult> HttpPut(string endpoint, int id, object payload)
+            => await HttpPut(endpoint, id, payload);
 
-        public async Task HttpPut(string endpoint, Guid id, object payload)
-            => await HttpPut(endpoint, id.ToString(), payload);
+        public async Task<ApiResult<T>> HttpPut<T>(string endpoint, Guid id, T payload)
+            => await HttpPut(endpoint, id, payload);
 
-        public async Task HttpPut(string endpoint, Guid id1, Guid id2, object payload)
+        public async Task<ApiResult> HttpPut(string endpoint, Guid id1, Guid id2, object payload)
             => await HttpPut(endpoint, new[] { id1.ToString(), id2.ToString() }, payload);
 
-        public async Task HttpPut(string endpoint, Guid id1, Guid id2, Guid id3, object payload)
+        public async Task<ApiResult> HttpPut(string endpoint, Guid id1, Guid id2, Guid id3, object payload)
             => await HttpPut(endpoint, new[] { id1.ToString(), id2.ToString(), id3.ToString() }, payload);
 
-        public async Task HttpPut(string endpoint, Guid id1, Guid id2, int id3, object payload)
+        public async Task<ApiResult> HttpPut(string endpoint, Guid id1, Guid id2, int id3, object payload)
             => await HttpPut(endpoint, new[] { id1.ToString(), id2.ToString(), id3.ToString() }, payload);
 
-        public async Task HttpPut(string endpoint, Guid id1, int id2, object payload)
+        public async Task<ApiResult> HttpPut(string endpoint, Guid id1, int id2, object payload)
             => await HttpPut(endpoint, new[] { id1.ToString(), id2.ToString() }, payload);
 
-        public async Task HttpPut(string endpoint, Guid id1, int id2, string id3, object payload)
+        public async Task<ApiResult> HttpPut(string endpoint, Guid id1, int id2, string id3, object payload)
             => await HttpPut(endpoint, new[] { id1.ToString(), id2.ToString(), id3 }, payload);
 
-        public async Task HttpPut(string endpoint, Guid id1, string id2, object payload)
+        public async Task<ApiResult> HttpPut(string endpoint, Guid id1, string id2, object payload)
             => await HttpPut(endpoint, new[] { id1.ToString(), id2 }, payload);
 
-        public async Task HttpPut(string endpoint, Guid id1, string id2, int id3, object payload)
+        public async Task<ApiResult> HttpPut(string endpoint, Guid id1, string id2, int id3, object payload)
             => await HttpPut(endpoint, new[] { id1.ToString(), id2, id3.ToString() }, payload);
 
-        public async Task HttpDelete(string endpoint, string id)
+        public async Task<ApiResult> HttpDelete(string endpoint, string id)
             => await HttpDelete(endpoint, new[] { id });
 
-        public async Task HttpDelete(string endpoint, Guid id)
+        public async Task<ApiResult> HttpDelete(string endpoint, Guid id)
             => await HttpDelete(endpoint, id.ToString());
 
-        public async Task HttpDelete(string endpoint, Guid id1, Guid id2)
+        public async Task<ApiResult> HttpDelete(string endpoint, Guid id1, Guid id2)
             => await HttpDelete(endpoint, new[] { id1.ToString(), id2.ToString() });
 
-        public async Task HttpDelete(string endpoint, Guid id1, Guid id2, Guid id3)
+        public async Task<ApiResult> HttpDelete(string endpoint, Guid id1, Guid id2, Guid id3)
             => await HttpDelete(endpoint, new[] { id1.ToString(), id2.ToString(), id3.ToString() });
 
-        public async Task HttpDelete(string endpoint, Guid id1, Guid id2, int id3)
+        public async Task<ApiResult> HttpDelete(string endpoint, Guid id1, Guid id2, int id3)
             => await HttpDelete(endpoint, new[] { id1.ToString(), id2.ToString(), id3.ToString() });
 
-        public async Task HttpDelete(string endpoint, Guid id1, int id2)
+        public async Task<ApiResult> HttpDelete(string endpoint, Guid id1, int id2)
             => await HttpDelete(endpoint, new[] { id1.ToString(), id2.ToString() });
 
-        public async Task HttpDelete(string endpoint, Guid id1, int id2, string id3)
+        public async Task<ApiResult> HttpDelete(string endpoint, Guid id1, int id2, string id3)
             => await HttpDelete(endpoint, new[] { id1.ToString(), id2.ToString(), id3 });
 
-        public async Task HttpDelete(string endpoint, Guid id1, string id2)
+        public async Task<ApiResult> HttpDelete(string endpoint, Guid id1, string id2)
             => await HttpDelete(endpoint, new[] { id1.ToString(), id2 });
 
-        public async Task HttpDelete(string endpoint, Guid id1, string id2, int id3)
+        public async Task<ApiResult> HttpDelete(string endpoint, Guid id1, string id2, int id3)
             => await HttpDelete(endpoint, new[] { id1.ToString(), id2, id3.ToString() });
 
-        public async Task HttpDelete(string endpoint, int id)
+        public async Task<ApiResult> HttpDelete(string endpoint, int id)
             => await HttpDelete(endpoint, id.ToString());
 
         #endregion

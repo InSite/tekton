@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\Tek.Common\Tek.Common.csproj" />
+    <ProjectReference Include="..\..\lib\Tek.Toolbox\Tek.Toolbox.csproj" />
   </ItemGroup>
 
 </Project>
