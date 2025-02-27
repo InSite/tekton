@@ -37,7 +37,7 @@ public class TokenController : ControllerBase
 
         var tokenSettings = _securitySettings.Token;
 
-        var principal = _principalSearch.GetPrincipal(request, ip, tokenSettings.Whitelist, tokenSettings.Lifetime, errors);
+        var principal = _principalSearch.GetPrincipal(request, ip, IsWhitelisted(ip, tokenSettings.Whitelist), tokenSettings.Lifetime, errors);
 
         if (principal == null)
         {
@@ -90,8 +90,15 @@ public class TokenController : ControllerBase
     [HttpGet(Endpoints.Status)]
     public IActionResult GetStatus()
     {
+        var ip = GetClientIPAddress();
+
         var version = typeof(TokenController).Assembly.GetName().Version;
-        var status = $"Tekton API version {version} is online. The {_releaseSettings.Environment} environment says hello.";
+
+        var status = $"Tekton API version {version} is online. The {_releaseSettings.Environment} environment says hello to you at {ip}.";
+
+        if (IsWhitelisted(ip, _securitySettings.Token.Whitelist))
+            status += " Your IP address is whitelisted for additional access.";
+
         return Ok(status);
     }
 
@@ -158,4 +165,17 @@ public class TokenController : ControllerBase
 
     private string GetClientIPAddress()
         => Request.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "::1";
+
+    private bool IsWhitelisted(string ipAddress, string whitelist)
+    {
+        if (ipAddress.IsEmpty())
+            return false;
+
+        if (whitelist.IsEmpty())
+            return true;
+
+        var list = whitelist.Parse();
+
+        return ipAddress.MatchesAny(list);
+    }
 }

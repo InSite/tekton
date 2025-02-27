@@ -1,13 +1,10 @@
-using System.Reflection;
-
 using FluentValidation;
+
 using Microsoft.EntityFrameworkCore;
 
 using Serilog;
 
 using Tek.Service;
-using Tek.Service.Contact;
-using Tek.Service.Security;
 
 // Step 1. Load configuration settings before doing anything else.
 
@@ -107,7 +104,7 @@ void AddStorage(IServiceCollection services)
                 typeof(IEntityAdapter).IsAssignableFrom(t) ||
                 typeof(IEntityReader).IsAssignableFrom(t) ||
                 typeof(IEntityService).IsAssignableFrom(t) ||
-                typeof(IEntityWriter).IsAssignableFrom(t) 
+                typeof(IEntityWriter).IsAssignableFrom(t)
                 )
             )
             .ToList();
