@@ -2,9 +2,9 @@ $Now            = (Get-Date)
 $NowUtc         = $Now.ToUniversalTime()
 
 $MajorNumber    = "10"
-$MinorNumber    = ($NowUtc.ToString("yyyy")) -as [int]
-$BuildNumber    = ($NowUtc.ToString("MM") + $NowUtc.ToString("dd")) -as [int]
-$RevisionNumber = ($NowUtc.ToString("HH") + $NowUtc.ToString("mm")) -as [int]
+$MinorNumber    = ($NowUtc.ToString("yyyy"))
+$BuildNumber    = ($NowUtc.ToString("MM") + $NowUtc.ToString("dd"))
+$RevisionNumber = ($NowUtc.ToString("HH") + $NowUtc.ToString("mm"))
 $PackageVersion = "$MajorNumber.$MinorNumber.$BuildNumber.$RevisionNumber"
 
 
