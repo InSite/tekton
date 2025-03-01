@@ -1,4 +1,4 @@
-﻿namespace Tek.Contract
+﻿namespace Tek.Common
 {
     public class ErrorMonitorSettings
     {

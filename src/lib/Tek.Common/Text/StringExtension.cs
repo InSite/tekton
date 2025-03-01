@@ -65,6 +65,21 @@ namespace Tek.Common
         }
 
         /// <summary>
+        /// Returns true if a string starts with any item in an array of strings.
+        /// </summary>
+        public static bool StartsWithAny(this string value, IEnumerable<string> others)
+        {
+            if (value.IsEmpty())
+                return false;
+
+            foreach (var other in others)
+                if (!other.IsEmpty() && value.StartsWith(other, StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+            return false;
+        }
+
+        /// <summary>
         /// Converts a string value into a non-null collection.
         /// </summary>
         /// <remarks>

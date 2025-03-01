@@ -164,7 +164,17 @@ public class TokenController : ControllerBase
     }
 
     private string GetClientIPAddress()
-        => Request.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "::1";
+    {
+        var ip = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+
+        if (ip.IsEmpty() && Request.Headers.TryGetValue("X-Forwarded-For", out var forwarded))
+            ip = forwarded;
+
+        if (ip.IsEmpty() && Request.Headers.TryGetValue("X-Real-IP", out var real))
+            ip = real;
+
+        return ip ?? "Unknown";
+    }
 
     private bool IsWhitelisted(string ipAddress, string whitelist)
     {
