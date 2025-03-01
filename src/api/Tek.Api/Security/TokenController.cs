@@ -165,13 +165,21 @@ public class TokenController : ControllerBase
 
     private string GetClientIPAddress()
     {
-        var ip = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+        string? ip = "Unknown";
+
+        if (Request.Headers.TryGetValue("X-Real-IP", out var real))
+            ip = real;
 
         if (ip.IsEmpty() && Request.Headers.TryGetValue("X-Forwarded-For", out var forwarded))
             ip = forwarded;
 
-        if (ip.IsEmpty() && Request.Headers.TryGetValue("X-Real-IP", out var real))
-            ip = real;
+        if (ip.IsEmpty())
+        {
+            var remote = Request.HttpContext.Connection.RemoteIpAddress;
+
+            if (remote != null)
+                ip = remote.ToString();
+        }
 
         return ip ?? "Unknown";
     }
